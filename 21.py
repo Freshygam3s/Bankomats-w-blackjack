@@ -286,6 +286,13 @@ class BlackjackGame:
             self.window.destroy()
 
     def new_game(self):
+        # Clear card displays
+        for widget in self.dealer_cards.winfo_children():
+            widget.destroy()
+        for widget in self.player_cards.winfo_children():
+            widget.destroy()
+
+        # Reset game state
         self.deck = Deck()
         self.deck.shuffle()
         self.player_hand = Hand()
@@ -293,19 +300,16 @@ class BlackjackGame:
         self.current_bet = 0
         self.game_over = False
 
-        # Clear card displays
-        for widget in self.dealer_cards.winfo_children():
-            widget.destroy()
-        for widget in self.player_cards.winfo_children():
-            widget.destroy()
+        # Update UI
+        self.status_var.set(LANGUAGES[self.current_language]["status"])
+        self.chips_var.set(f"{LANGUAGES[self.current_language]['chips']} {self.get_balance()}")
+        self.dealer_label.config(text=f"{LANGUAGES[self.current_language]['dealer']} ?")
+        self.player_label.config(text=f"{LANGUAGES[self.current_language]['player']} 0")
 
-        # Reset buttons
+        # Enable betting button
         self.hit_button.config(state=tk.DISABLED)
         self.stand_button.config(state=tk.DISABLED)
         self.bet_button.config(state=tk.NORMAL)
-
-        self.status_var.set(LANGUAGES[self.current_language]["status"])
-        self.chips_var.set(f"{LANGUAGES[self.current_language]['chips']} {self.get_balance()}")
 
     def place_bet(self):
         balance = self.get_balance()
@@ -411,6 +415,9 @@ class BlackjackGame:
         self.stand_button.config(state=tk.DISABLED)
         self.bet_button.config(state=tk.NORMAL)
 
+        # Reset the game after a short delay
+        self.window.after(2000, self.new_game)
+
     def bust(self):
         self.game_over = True
         self.chips_var.set(f"{LANGUAGES[self.current_language]['chips']} {self.get_balance()}")
@@ -421,6 +428,9 @@ class BlackjackGame:
         self.hit_button.config(state=tk.DISABLED)
         self.stand_button.config(state=tk.DISABLED)
         self.bet_button.config(state=tk.NORMAL)
+
+        # Reset the game after a short delay
+        self.window.after(2000, self.new_game)
 
     def check_winner(self):
         self.game_over = True
@@ -454,6 +464,9 @@ class BlackjackGame:
         self.hit_button.config(state=tk.DISABLED)
         self.stand_button.config(state=tk.DISABLED)
         self.bet_button.config(state=tk.NORMAL)
+
+        # Reset the game after a short delay to see the final cards
+        self.window.after(2000, self.new_game)
 
 
 class ATMApp:
